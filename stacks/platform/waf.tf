@@ -1,12 +1,22 @@
 # WAF asociado directamente al ALB.
 
+locals {
+  # IPs exentas del límite del WAF durante la prueba de carga: las indicadas a
+  # mano y, en modo prueba, las IPs públicas del NAT (por donde sale el clúster).
+  load_test_addresses = concat(
+    var.load_test_cidrs,
+    var.load_test_mode ? [for ip in module.vpc.nat_public_ips : "${ip}/32"] : [],
+  )
+  load_test_enabled = var.load_test_mode || length(var.load_test_cidrs) > 0
+}
+
 resource "aws_wafv2_ip_set" "load_test" {
-  count = length(var.load_test_cidrs) > 0 ? 1 : 0
+  count = local.load_test_enabled ? 1 : 0
 
   name               = "${var.project}-load-test"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
-  addresses          = var.load_test_cidrs
+  addresses          = local.load_test_addresses
 }
 
 resource "aws_wafv2_web_acl" "api" {

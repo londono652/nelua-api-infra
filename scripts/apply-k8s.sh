@@ -22,5 +22,26 @@ for ENVIRONMENT in staging prod; do
   envsubst '${ENVIRONMENT} ${TARGET_GROUP_ARN}' < "$ROOT/k8s/targetgroupbinding.yaml" | kubectl apply -f -
 done
 
+# ---------- Observabilidad: Prometheus + Grafana ----------
+kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
+# La contraseña de Grafana se genera una sola vez y vive en un Secret.
+if ! kubectl get secret grafana-admin --namespace monitoring >/dev/null 2>&1; then
+  kubectl create secret generic grafana-admin --namespace monitoring \
+    --from-literal=admin-user=admin \
+    --from-literal=admin-password="$(openssl rand -hex 16)"
+fi
+
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts >/dev/null
+helm repo update prometheus-community >/dev/null
+helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+  --namespace monitoring \
+  --values "$ROOT/k8s/monitoring/values.yaml" \
+  --wait --timeout 10m
+
+kubectl apply -f "$ROOT/k8s/monitoring/servicemonitor.yaml"
+kubectl apply -f "$ROOT/k8s/monitoring/dashboard.yaml"
+
 kubectl get nodepools
 kubectl get targetgroupbindings -A
+kubectl get pods --namespace monitoring
