@@ -33,3 +33,18 @@ variable "app_repo" {
   type        = string
   default     = "nelua-api-app"
 }
+
+variable "github_owner_id" {
+  description = "ID numérico del usuario de GitHub (gh api users/<usuario> -q .id)"
+  type        = string
+}
+
+variable "infra_repo_id" {
+  description = "ID numérico del repo de infraestructura (gh api repos/<usuario>/<repo> -q .id)"
+  type        = string
+}
+
+variable "app_repo_id" {
+  description = "ID numérico del repo de la aplicación (gh api repos/<usuario>/<repo> -q .id)"
+  type        = string
+}

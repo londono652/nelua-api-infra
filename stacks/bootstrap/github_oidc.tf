@@ -6,16 +6,24 @@ resource "aws_iam_openid_connect_provider" "github" {
 }
 
 locals {
+  # Formato del "subject" que GitHub pone en el token OIDC. Los repositorios
+  # creados desde julio de 2026 usan identificadores inmutables:
+  #   repo:<usuario>@<id-usuario>/<repo>@<id-repo>:<contexto>
+  # Los IDs numéricos no cambian aunque el usuario o el repo se renombren, así
+  # que nadie puede suplantar al repo registrando después el mismo nombre.
+  infra_repo_subject = "repo:${var.github_owner}@${var.github_owner_id}/${var.infra_repo}@${var.infra_repo_id}"
+  app_repo_subject   = "repo:${var.github_owner}@${var.github_owner_id}/${var.app_repo}@${var.app_repo_id}"
+
   infra_subjects = [
-    "repo:${var.github_owner}/${var.infra_repo}:ref:refs/heads/main",
-    "repo:${var.github_owner}/${var.infra_repo}:environment:infra",
-    "repo:${var.github_owner}/${var.infra_repo}:pull_request",
+    "${local.infra_repo_subject}:ref:refs/heads/main",
+    "${local.infra_repo_subject}:environment:infra",
+    "${local.infra_repo_subject}:pull_request",
   ]
 
   app_subjects = [
-    "repo:${var.github_owner}/${var.app_repo}:ref:refs/heads/main",
-    "repo:${var.github_owner}/${var.app_repo}:environment:staging",
-    "repo:${var.github_owner}/${var.app_repo}:environment:prod",
+    "${local.app_repo_subject}:ref:refs/heads/main",
+    "${local.app_repo_subject}:environment:staging",
+    "${local.app_repo_subject}:environment:prod",
   ]
 }
 
