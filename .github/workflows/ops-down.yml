@@ -49,6 +49,8 @@ jobs:
           aws eks update-kubeconfig --name "$cluster"
           helm uninstall nelua-api --namespace staging --ignore-not-found --wait
           helm uninstall nelua-api --namespace prod --ignore-not-found --wait
+          helm uninstall kube-prometheus-stack --namespace monitoring --ignore-not-found --wait
+          kubectl delete namespace loadtest --ignore-not-found --wait --timeout=5m
           kubectl delete -f k8s/nodepool.yaml --ignore-not-found --wait --timeout=10m
 
       - name: terraform destroy

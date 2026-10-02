@@ -63,3 +63,9 @@ variable "load_test_cidrs" {
   type        = list(string)
   default     = []
 }
+
+variable "load_test_mode" {
+  description = "true = el WAF deja pasar las IPs de salida del propio clúster (NAT), para lanzar la prueba de carga desde dentro. Se vuelve a false al terminar"
+  type        = bool
+  default     = false
+}
