@@ -4,18 +4,19 @@ data "aws_route53_zone" "main" {
   private_zone = false
 }
 
-# Certificado público gratuito. El comodín cubre api.nelua.site (prod) y
-# api-staging.nelua.site (staging) con un solo certificado.
+# Certificado público gratuito, emitido solo para los dos nombres que se usan
+# (sin comodín): api.nelua.site (prod) y api-staging.nelua.site (staging).
 resource "aws_acm_certificate" "api" {
-  domain_name       = "*.${var.domain}"
-  validation_method = "DNS"
+  domain_name               = "api.${var.domain}"
+  subject_alternative_names = ["api-staging.${var.domain}"]
+  validation_method         = "DNS"
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
-# Registro que le demuestra a ACM que el dominio es nuestro.
+# Registros que le demuestran a ACM que los dos nombres son nuestros.
 resource "aws_route53_record" "cert_validation" {
   for_each = {
     for option in aws_acm_certificate.api.domain_validation_options : option.domain_name => {

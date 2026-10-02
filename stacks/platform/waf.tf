@@ -10,6 +10,7 @@ resource "aws_wafv2_ip_set" "load_test" {
 }
 
 resource "aws_wafv2_web_acl" "api" {
+  #checkov:skip=CKV2_AWS_31:El logging completo del WAF a 10.000 RPS tiene un costo alto. Cada regla ya publica metricas y muestras de peticiones en CloudWatch; en produccion se activaria con filtro para registrar solo los bloqueos.
   name  = var.project
   scope = "REGIONAL"
 

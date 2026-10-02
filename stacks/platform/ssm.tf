@@ -12,6 +12,7 @@ locals {
 }
 
 resource "aws_ssm_parameter" "contract" {
+  #checkov:skip=CKV2_AWS_34:Estos parametros no son secretos (nombres, ARNs y dominios). Los secretos irian en Secrets Manager; cifrarlos obligaria a dar permisos de KMS al pipeline sin proteger nada.
   for_each = local.parameters
 
   name  = "/${var.project}/${each.key}"

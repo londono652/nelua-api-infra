@@ -58,6 +58,7 @@ resource "aws_vpc_security_group_ingress_rule" "pods_from_alb" {
 }
 
 resource "aws_lb" "api" {
+  #checkov:skip=CKV2_AWS_76:Falso positivo. El WAF asociado si incluye AWSManagedRulesKnownBadInputsRuleSet (la que cubre Log4j); checkov no lo detecta por el bloque dynamic de la web ACL.
   #checkov:skip=CKV_AWS_150:La plataforma es efimera (se destruye con ops-down para no generar costo). En un entorno permanente se activaria la proteccion contra borrado.
   #checkov:skip=CKV_AWS_91:Los access logs a 10.000 RPS generan un volumen y costo altos en S3. La observabilidad se cubre con metricas de Prometheus y CloudWatch; en produccion se activarian con muestreo o retencion corta.
   name               = var.project
@@ -70,6 +71,7 @@ resource "aws_lb" "api" {
 }
 
 resource "aws_lb_target_group" "api" {
+  #checkov:skip=CKV_AWS_378:TLS termina en el ALB. El tramo ALB -> pods viaja dentro de la VPC, en subnets privadas, y un security group solo lo permite desde el ALB. Cifrarlo tambien exigiria certificados en los pods o un service mesh.
   for_each = local.environments
 
   name        = "${var.project}-${each.key}"
