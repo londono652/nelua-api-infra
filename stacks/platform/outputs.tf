@@ -22,3 +22,8 @@ output "target_group_arns" {
   description = "Target groups donde se registran los pods"
   value       = { for env, target_group in aws_lb_target_group.api : env => target_group.arn }
 }
+
+output "waf_web_acl_arn" {
+  description = "ARN de la web ACL del WAF asociada al ALB"
+  value       = aws_wafv2_web_acl.api.arn
+}
