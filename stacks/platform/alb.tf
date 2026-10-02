@@ -58,6 +58,8 @@ resource "aws_vpc_security_group_ingress_rule" "pods_from_alb" {
 }
 
 resource "aws_lb" "api" {
+  #checkov:skip=CKV_AWS_150:La plataforma es efimera (se destruye con ops-down para no generar costo). En un entorno permanente se activaria la proteccion contra borrado.
+  #checkov:skip=CKV_AWS_91:Los access logs a 10.000 RPS generan un volumen y costo altos en S3. La observabilidad se cubre con metricas de Prometheus y CloudWatch; en produccion se activarian con muestreo o retencion corta.
   name               = var.project
   load_balancer_type = "application"
   internal           = false

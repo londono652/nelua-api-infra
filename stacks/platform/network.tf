@@ -1,11 +1,3 @@
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
-locals {
-  azs = slice(data.aws_availability_zones.available.names, 0, 3)
-}
-
 # VPC en 3 zonas: subnets públicas (ALB y NAT) y privadas (nodos y pods).
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
@@ -13,7 +5,7 @@ module "vpc" {
 
   name = var.project
   cidr = var.vpc_cidr
-  azs  = local.azs
+  azs  = var.azs
 
   public_subnets  = [for i in range(3) : cidrsubnet(var.vpc_cidr, 8, i)]
   private_subnets = [for i in range(3) : cidrsubnet(var.vpc_cidr, 4, i + 1)]

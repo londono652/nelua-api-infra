@@ -22,6 +22,12 @@ variable "vpc_cidr" {
   default     = "10.0.0.0/16"
 }
 
+variable "azs" {
+  description = "Zonas de disponibilidad, fijadas de forma explícita para que la red no cambie sola si AWS agrega una zona"
+  type        = list(string)
+  default     = ["us-east-2a", "us-east-2b", "us-east-2c"]
+}
+
 variable "nat_per_az" {
   description = "true = un NAT Gateway por zona (producción). false = uno solo (demo, más barato)"
   type        = bool

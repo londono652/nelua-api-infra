@@ -62,6 +62,7 @@ resource "aws_iam_role" "gha_infra" {
 # repo de infraestructura puede asumir este rol. En producción se acotaría con
 # un permission boundary.
 resource "aws_iam_role_policy_attachment" "gha_infra_admin" {
+  #checkov:skip=CKV_AWS_274:El pipeline de IaC crea IAM, VPC, EKS, ALB, WAF y DNS. El control esta en la confianza OIDC (solo el repo de infraestructura, con IDs inmutables). En produccion se acotaria con un permission boundary.
   role       = aws_iam_role.gha_infra.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }

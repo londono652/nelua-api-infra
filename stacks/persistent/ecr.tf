@@ -1,5 +1,6 @@
 # Repositorio de imágenes de la API.
 resource "aws_ecr_repository" "api" {
+  #checkov:skip=CKV_AWS_136:Las imagenes ya se cifran en reposo con AES-256 administrado por AWS. Una llave KMS propia agrega costo sin beneficio para una imagen que no contiene secretos.
   name = var.project
 
   # Tags inmutables: una vez publicada, la imagen de un commit no se puede
